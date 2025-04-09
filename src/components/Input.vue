@@ -50,7 +50,11 @@ const emit = defineEmits<IEmits>()
 const isPassShow = ref(false)
 
 const convertedType = computed(() =>
-  props.type !== 'password' ? props.type : isPassShow ? 'text' : 'password'
+  props.type !== 'password'
+    ? props.type
+    : isPassShow.value
+    ? 'text'
+    : 'password'
 )
 
 const handleChange = (e: Event) => {
