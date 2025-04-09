@@ -25,12 +25,13 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, type InputTypeHTMLAttribute } from 'vue'
+import { computed, ref } from 'vue'
 import EyeIcon from '../assets/icons/eye.svg'
 import EyeHideIcon from '../assets/icons/eye-hide.svg'
+import type { TInputType } from '../types/input'
 
 interface IProps {
-  type?: InputTypeHTMLAttribute
+  type?: TInputType
   label?: string
   errorMessage?: string
   error?: boolean
