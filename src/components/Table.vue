@@ -121,14 +121,14 @@ const handleSelectAll = () => {
   position: relative;
   border-radius: 10px;
   overflow: hidden;
+  padding-bottom: 3px;
   &::after {
     content: '';
     position: absolute;
-    bottom: 0;
+    bottom: 2px;
     left: 0;
     width: calc(100% - 4px);
     height: 10%;
-    z-index: -2;
     border: 2px solid $color-secondary;
     border-bottom-right-radius: 10px;
     border-bottom-left-radius: 10px;
@@ -176,8 +176,14 @@ const handleSelectAll = () => {
     }
     &_body {
       tr {
+        transition: background $duration-base;
+        &:hover {
+          background: $color-gray-base;
+        }
         td {
           padding: 8px;
+          position: relative;
+          z-index: 10;
           border-bottom: 2px solid $color-secondary;
           & > div {
             display: flex;
@@ -193,6 +199,12 @@ const handleSelectAll = () => {
       tr:last-child {
         td {
           border: 0px;
+        }
+        td:first-child {
+          border-bottom-left-radius: 10px;
+        }
+        td:last-child {
+          border-bottom-right-radius: 10px;
         }
       }
       tr {
