@@ -86,7 +86,7 @@ const handleChange = (value: string) => {
         }
       }
       &_label {
-        transition: 0.2s;
+        transition: $base-duration;
       }
       &:hover {
         .group-list-item_label {
