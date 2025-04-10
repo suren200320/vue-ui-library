@@ -1,26 +1,45 @@
 <template>
-  <div class="checkbox">
-    <input type="checkbox" :class="['checkbox-default',]" v-model="checked">
-    <div :class="['checkbox-custom', checked && 'checked', size]" @click="handleCheck">
-      <img src="../assets/icons/check.svg" v-if="checked" class="checkbox-custom-checkmark">
+  <div class="checkbox" @click="handleCheck">
+    <input type="checkbox" class="checkbox-default hidden" :checked="isChecked" @change="handleCheck">
+    <div :class="['checkbox-custom', isChecked && 'checked', size, side]">
+      <img src="../assets/icons/check.svg" v-if="modelValue" class="checkbox-custom-checkmark">
     </div>
-    <label for="" class="checkbox-label">{{ label }}</label>
+    <label :class="['checkbox-label', side]">{{ label }}</label>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { ref, defineProps } from 'vue';
-import type { ICheckBoxProps } from '../types/checkbox';
+import { defineProps, defineEmits, computed } from 'vue';
+import type { TBoxSize, TSide } from '../types/main';
 
-const checked = ref(false);
+interface IProps {
+  value: string | boolean;
+  modelValue: string[] | boolean;
+  size?: TBoxSize;
+  side?: TSide;
+  label?: string;
+}
 
-withDefaults(defineProps<ICheckBoxProps>(), {
-  size: 'sm'
-})
+interface IEmits {
+  (event: 'update:modelValue', value: boolean | string[]): void
+}
+
+const props = defineProps<IProps>();
+const emit = defineEmits<IEmits>();
+
+
+const isChecked = computed(() => Array.isArray(props.modelValue) && typeof props.value === 'string' ? props.modelValue.includes(props.value) : props.modelValue)
 
 const handleCheck = () => {
-  checked.value = !checked.value;
-}
+  if(Array.isArray(props.modelValue) && typeof props.value === 'string') {
+    
+    const updated = props.modelValue.includes(props.value) ? props.modelValue.filter(item => item !== props.value) : [...props.modelValue, props.value] 
+    emit('update:modelValue', updated);
+  } else {
+    emit('update:modelValue', !props.modelValue);
+    
+  }
+};
 </script>
 
 <style lang="scss" scoped>
@@ -40,19 +59,27 @@ const handleCheck = () => {
     border-radius: 2px;
     position: relative;
 
-    &.sm{
+    &.sm {
       width: $box-sm;
       height: $box-sm;
     }
 
-    &.base{
+    &.base {
       width: $box-base;
       height: $box-base;
     }
 
-    &.xl{
+    &.xl {
       width: $box-xl;
       height: $box-xl;
+    }
+
+    &.left {
+      order: 2;
+    }
+
+    &.right {
+      order: 1;
     }
 
     &.checked {
@@ -71,6 +98,15 @@ const handleCheck = () => {
     font-family: $font-main;
     font-size: $text-sm;
     font-weight: 400;
+    cursor: pointer;
+
+    &.left {
+      order: 1;
+    }
+
+    &.right {
+      order: 2;
+    }
   }
 }
 </style>
