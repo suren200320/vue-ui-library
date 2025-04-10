@@ -6,7 +6,7 @@ $color-dark: #222222;
 $color-red: #f00030;
 
 // Transitions
-$base-duration: 0.3s;
+$duration-base: 0.3s;
 
 // Radius
 $radius-base: 4px;
@@ -15,3 +15,8 @@ $radius-base: 4px;
 $text-sm: 14px;
 $text-base: 16px;
 $text-xl: 18px;
+
+// Checkbox Sizes
+$box-sm: 16px;
+$box-base: 20px;
+$box-xl: 24px;

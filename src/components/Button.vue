@@ -26,8 +26,8 @@ withDefaults(defineProps<IProps>(), {
   position: relative;
   font-family: $font-main;
   font-size: $text-xl;
-  transition: transform 0.1s ease, background $base-duration,
-    border-color $base-duration, color $base-duration;
+  transition: transform 0.1s ease, background $duration-base,
+    border-color $duration-base, color $duration-base;
 
   &-content {
     position: relative;
@@ -63,7 +63,7 @@ withDefaults(defineProps<IProps>(), {
       width: 100%;
       height: 2px;
       background: $color-primary;
-      transition: all $base-duration ease;
+      transition: all $duration-base ease;
       opacity: 0;
     }
     &:hover::after {

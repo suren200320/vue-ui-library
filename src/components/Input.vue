@@ -103,7 +103,7 @@ const handleToggleShow = () => (isPassShow.value = !isPassShow.value)
       transform: translateY(-50%);
       cursor: pointer;
       padding: 3px;
-      transition: all $base-duration ease;
+      transition: all $duration-base ease;
       :hover {
         border-radius: 50%;
         background: $color-light;

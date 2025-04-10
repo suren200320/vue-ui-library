@@ -4,11 +4,19 @@
       <thead class="jk-table_wrapper-table_head">
         <tr class="jk-table_wrapper-table_head-tr">
           <th
-            v-for="(head, idx) in headers"
+            v-for="(head, idx) in convertedHeaders"
             :key="idx"
-            :class="['jk-table_wrapper-table_head-tr_th', head.align || 'left']"
+            :class="[
+              'jk-table_wrapper-table_head-tr_th',
+              head.align || 'left',
+              head.key === 'select-action' ? 'action' : ''
+            ]"
           >
-            {{ head.title || head.key }}
+            <div
+              @click="() => head.key === 'select-action' && handleSelectAll()"
+            >
+              {{ head.title || head.key }}
+            </div>
           </th>
         </tr>
       </thead>
@@ -31,11 +39,25 @@
             class="jk-table_wrapper-table_body-tr"
           >
             <td
-              v-for="(row, idx) in headers"
+              v-for="(row, idx) in convertedHeaders"
               :key="idx"
-              :class="['jk-table_wrapper-table_body-tr_td', row.align]"
+              :class="[
+                'jk-table_wrapper-table_body-tr_td',
+                row.key === 'select-action' ? 'right' : row.align
+              ]"
             >
-              {{ item[row.key] }}
+              <div>
+                <template v-if="row.key === 'select-action' && uniqueKey">
+                  <Checkbox
+                    v-model="_selecteds"
+                    :value="String(item[uniqueKey])"
+                    @update:model-value="handleSelect"
+                  />
+                </template>
+                <template v-else>
+                  {{ item[row.key] }}
+                </template>
+              </div>
             </td>
           </tr>
         </template>
@@ -46,17 +68,52 @@
 
 <script setup lang="ts" generic="T">
 import type { ITableHead } from '@/types/table'
+import { computed } from 'vue'
+import Checkbox from './Checkbox.vue'
 
 interface IProps<T> {
   items: T[]
   headers: ITableHead<T>[]
   selectable?: boolean
+  uniqueKey?: keyof T
+  selecteds?: string[]
 }
 
-withDefaults(defineProps<IProps<T>>(), {
+interface IEmits {
+  (event: 'update:selecteds', data: string[]): void
+}
+
+const emit = defineEmits<IEmits>()
+
+const props = withDefaults(defineProps<IProps<T>>(), {
   items: () => [],
-  headers: () => []
+  headers: () => [],
+  modelSelecteds: () => []
 })
+
+const _selecteds = computed({
+  get: () => props.selecteds || [],
+  set: (val: string[]) => emit('update:selecteds', val)
+})
+const convertedHeaders = computed((): ITableHead<T>[] =>
+  props.selectable
+    ? [...props.headers, { key: 'select-action' as keyof T, align: 'right' }]
+    : props.headers
+)
+
+const handleSelect = (data: string[] | boolean) => {
+  if (Array.isArray(data)) {
+    emit('update:selecteds', data)
+  }
+}
+const handleSelectAll = () => {
+  const { uniqueKey } = props
+  if (uniqueKey) {
+    const data: string[] = props.items.map((item) => String(item[uniqueKey]))
+    if (_selecteds.value.length === data.length) emit('update:selecteds', [])
+    else emit('update:selecteds', data)
+  }
+}
 </script>
 
 <style lang="scss">
@@ -105,12 +162,26 @@ withDefaults(defineProps<IProps<T>>(), {
           text-align: right;
         }
       }
+      th.action {
+        & > div {
+          width: max-content;
+          justify-self: end;
+          cursor: pointer;
+          transition: color $duration-base;
+        }
+        & > div:hover {
+          color: #fff;
+        }
+      }
     }
     &_body {
       tr {
         td {
           padding: 8px;
           border-bottom: 2px solid $color-secondary;
+          & > div {
+            display: flex;
+          }
         }
         td:first-child {
           border-left: 2px solid $color-secondary;
@@ -126,10 +197,14 @@ withDefaults(defineProps<IProps<T>>(), {
       }
       tr {
         td.left {
-          text-align: left;
+          & > div {
+            justify-content: start;
+          }
         }
         td.right {
-          text-align: right;
+          & > div {
+            justify-content: end;
+          }
         }
       }
     }

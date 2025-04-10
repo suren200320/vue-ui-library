@@ -15,7 +15,7 @@
           :checked="item.value === modelValue"
           @change="handleChange(item.value)"
         />
-        <div class="group-list-item_box">
+        <div :class="['group-list-item_box', size]">
           <div class="group-list-item_box_circle"></div>
         </div>
         <div class="group-list-item_label">{{ item.label }}</div>
@@ -25,7 +25,7 @@
 </template>
 
 <script setup lang="ts">
-import type { TOrientation } from '../types/main'
+import type { TBoxSize, TOrientation } from '../types/main'
 import type { IRadioItem } from '../types/radio'
 
 interface IProps {
@@ -33,6 +33,7 @@ interface IProps {
   label?: string
   items?: IRadioItem[]
   modelValue?: string
+  size?: TBoxSize
   orientation?: TOrientation
 }
 
@@ -41,7 +42,8 @@ interface IEmits {
 }
 
 withDefaults(defineProps<IProps>(), {
-  orientation: 'horizontal'
+  orientation: 'horizontal',
+  size: 'sm'
 })
 
 const emit = defineEmits<IEmits>()
@@ -56,16 +58,20 @@ const handleChange = (value: string) => {
   display: flex;
   flex-direction: column;
   gap: 8px;
+
   &-list {
     display: flex;
     gap: 8px;
+
     &-item {
       display: flex;
       gap: 4px;
       align-items: center;
+
       &_input {
         display: none;
       }
+
       &_box {
         position: relative;
         border-radius: 50%;
@@ -73,6 +79,22 @@ const handleChange = (value: string) => {
         height: 20px;
         cursor: pointer;
         border: 2px solid $color-dark;
+
+        &.sm {
+          width: $box-sm;
+          height: $box-sm;
+        }
+
+        &.base {
+          width: $box-base;
+          height: $box-base;
+        }
+
+        &.xl {
+          width: $box-xl;
+          height: $box-xl;
+        }
+
         &_circle {
           position: absolute;
           top: 50%;
@@ -85,14 +107,17 @@ const handleChange = (value: string) => {
           opacity: 0;
         }
       }
+
       &_label {
-        transition: $base-duration;
+        transition: $duration-base;
       }
+
       &:hover {
         .group-list-item_label {
           color: $color-primary;
         }
       }
+
       &.checked {
         .group-list-item_box_circle {
           opacity: 1;
@@ -100,6 +125,7 @@ const handleChange = (value: string) => {
       }
     }
   }
+
   &-list.vertical {
     flex-direction: column;
   }
